@@ -38,6 +38,7 @@ describe('Testing Provider', function () {
           loginRoute: loginRoute,
           keysetRoute: keysetRoute,
           dynRegRoute: dynRegRoute,
+          privateRouteRegex: /\/private\//,
           staticPath: path.join(__dirname, '/views/'),
           devMode: false,
           customParams: { lmsType: 'canvas' },

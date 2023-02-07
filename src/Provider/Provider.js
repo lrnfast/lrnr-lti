@@ -208,6 +208,9 @@ class Provider {
     // Registers main athentication and routing middleware
     const sessionValidator = async (req, res, next) => {
       provMainDebug('Receiving request at path: ' + req.baseUrl + req.path)
+      // Check if private route
+      if (options.privateRouteRegex?.exec(req.path)) return next();
+      provMainDebug('Path is not a private route');
       // Ckeck if request is attempting to initiate oidc login flow or access reserved routes
       if (req.path === this.#loginRoute || req.path === this.#keysetRoute || req.path === this.#dynRegRoute) return next()
 
