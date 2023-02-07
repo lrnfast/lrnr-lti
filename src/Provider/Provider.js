@@ -820,13 +820,13 @@ class Provider {
 
       try {
         kid = await Auth.generatePlatformKeyPair(_ENCRYPTIONKEY, _Database, platform.url, platform.clientId)
-        const plat = new Platform(platform.name, platform.url, platform.clientId, platform.authenticationEndpoint, platform.accesstokenEndpoint, platform.authorizationServer, kid, _ENCRYPTIONKEY, platform.authConfig, this.Database)
+        const plat = new Platform(platform.name, platform.url, platform.clientId, platform.authenticationEndpoint, platform.accesstokenEndpoint, platform.authorizationServer, kid, _ENCRYPTIONKEY, platform.authConfig, this.Database, platform.customParams)
 
         // Save platform to db
         provMainDebug('Registering new platform')
         provMainDebug('Platform Url: ' + platform.url)
         provMainDebug('Platform ClientId: ' + platform.clientId)
-        await _Database.Replace(false, 'platform', { platformUrl: platform.url, clientId: platform.clientId }, { platformName: platform.name, platformUrl: platform.url, clientId: platform.clientId, authEndpoint: platform.authenticationEndpoint, accesstokenEndpoint: platform.accesstokenEndpoint, authorizationServer: platform.authorizationServer, kid: kid, authConfig: platform.authConfig })
+        await _Database.Replace(false, 'platform', { platformUrl: platform.url, clientId: platform.clientId }, { platformName: platform.name, platformUrl: platform.url, clientId: platform.clientId, authEndpoint: platform.authenticationEndpoint, accesstokenEndpoint: platform.accesstokenEndpoint, authorizationServer: platform.authorizationServer, kid: kid, authConfig: platform.authConfig, customParams: platform.customParams })
 
         return plat
       } catch (err) {
@@ -838,7 +838,8 @@ class Provider {
       }
     } else {
       provMainDebug('Platform already registered')
-      await _Database.Modify(false, 'platform', { platformUrl: platform.url, clientId: platform.clientId }, { platformName: platform.name || await _platform.platformName(), authEndpoint: platform.authenticationEndpoint || await _platform.platformAuthEndpoint(), accesstokenEndpoint: platform.accesstokenEndpoint || await _platform.platformAccessTokenEndpoint(), authorizationServer: platform.authorizationServer || await _platform.platformAuthorizationServer(), authConfig: platform.authConfig || await _platform.platformAuthConfig() })
+
+      await _Database.Modify(false, 'platform', { platformUrl: platform.url, clientId: platform.clientId }, { platformName: platform.name || await _platform.platformName(), authEndpoint: platform.authenticationEndpoint || await _platform.platformAuthEndpoint(), accesstokenEndpoint: platform.accesstokenEndpoint || await _platform.platformAccessTokenEndpoint(), authorizationServer: platform.authorizationServer || await _platform.platformAuthorizationServer(), authConfig: platform.authConfig || await _platform.platformAuthConfig(), customParams: platform.customParams || await _platform.platformCustomParams() })
       return _getPlatform(platform.url, platform.clientId, _ENCRYPTIONKEY, _Database)
     }
   }
@@ -859,7 +860,7 @@ class Provider {
       const result = await _Database.Get(false, 'platform', { platformUrl: url, clientId: clientId })
       if (!result) return false
       const plat = result[0]
-      const platform = new Platform(plat.platformName, plat.platformUrl, plat.clientId, plat.authEndpoint, plat.accesstokenEndpoint, plat.authorizationServer, plat.kid, _ENCRYPTIONKEY, plat.authConfig, _Database)
+      const platform = new Platform(plat.platformName, plat.platformUrl, plat.clientId, plat.authEndpoint, plat.accesstokenEndpoint, plat.authorizationServer, plat.kid, _ENCRYPTIONKEY, plat.authConfig, _Database, plat.customParams)
       return platform
     }
 
@@ -868,7 +869,7 @@ class Provider {
 
     const platforms = []
     for (const plat of result) {
-      const platform = new Platform(plat.platformName, plat.platformUrl, plat.clientId, plat.authEndpoint, plat.accesstokenEndpoint, plat.authorizationServer, plat.kid, _ENCRYPTIONKEY, plat.authConfig, _Database)
+      const platform = new Platform(plat.platformName, plat.platformUrl, plat.clientId, plat.authEndpoint, plat.accesstokenEndpoint, plat.authorizationServer, plat.kid, _ENCRYPTIONKEY, plat.authConfig, _Database, plat.customParams)
       platforms.push(platform)
     }
 
@@ -886,7 +887,7 @@ class Provider {
     const result = await this.Database.Get(false, 'platform', { kid: platformId })
     if (!result) return false
     const plat = result[0]
-    const platform = new Platform(plat.platformName, plat.platformUrl, plat.clientId, plat.authEndpoint, plat.accesstokenEndpoint, plat.authorizationServer, plat.kid, this.#ENCRYPTIONKEY, plat.authConfig, this.Database)
+    const platform = new Platform(plat.platformName, plat.platformUrl, plat.clientId, plat.authEndpoint, plat.accesstokenEndpoint, plat.authorizationServer, plat.kid, this.#ENCRYPTIONKEY, plat.authConfig, this.Database, plat.customParams)
     return platform
   }
 
@@ -919,7 +920,8 @@ class Provider {
       clientId: platformInfo.clientId || oldClientId,
       name: platformInfo.name || await platform.platformName(),
       authenticationEndpoint: platformInfo.authenticationEndpoint || await platform.platformAuthEndpoint(),
-      accesstokenEndpoint: platformInfo.accesstokenEndpoint || await platform.platformAccessTokenEndpoint()
+      accesstokenEndpoint: platformInfo.accesstokenEndpoint || await platform.platformAccessTokenEndpoint(),
+      customParams: { ...platform.platformCustomParams(), ...platformInfo.customParams }
     }
     if (platformInfo.authorizationServer !== undefined) update.authorizationServer = platformInfo.authorizationServer
 
@@ -945,9 +947,9 @@ class Provider {
         await this.Database.Modify(false, 'privatekey', { kid: platformId }, { platformUrl: update.url, clientId: update.clientId })
       }
 
-      await this.Database.Modify(false, 'platform', { kid: platformId }, { platformUrl: update.url, clientId: update.clientId, platformName: update.name, authEndpoint: update.authenticationEndpoint, accesstokenEndpoint: update.accesstokenEndpoint, authorizationServer: update.authorizationServer, authConfig: update.authConfig })
+      await this.Database.Modify(false, 'platform', { kid: platformId }, { platformUrl: update.url, clientId: update.clientId, platformName: update.name, authEndpoint: update.authenticationEndpoint, accesstokenEndpoint: update.accesstokenEndpoint, authorizationServer: update.authorizationServer, authConfig: update.authConfig,  })
 
-      const platform = new Platform(update.name, update.url, update.clientId, update.authenticationEndpoint, update.accesstokenEndpoint, update.authorizationServer, platformId, this.#ENCRYPTIONKEY, update.authConfig, this.Database)
+      const platform = new Platform(update.name, update.url, update.clientId, update.authenticationEndpoint, update.accesstokenEndpoint, update.authorizationServer, platformId, this.#ENCRYPTIONKEY, update.authConfig, this.Database, update.customParams)
       return platform
     } catch (err) {
       if (alteredUrlClientIdFlag) {
@@ -993,7 +995,7 @@ class Provider {
     const result = await this.Database.Get(false, 'platform')
 
     if (result) {
-      for (const plat of result) platforms.push(new Platform(plat.platformName, plat.platformUrl, plat.clientId, plat.authEndpoint, plat.accesstokenEndpoint, plat.authorizationServer, plat.kid, this.#ENCRYPTIONKEY, plat.authConfig, this.Database))
+      for (const plat of result) platforms.push(new Platform(plat.platformName, plat.platformUrl, plat.clientId, plat.authEndpoint, plat.accesstokenEndpoint, plat.authorizationServer, plat.kid, this.#ENCRYPTIONKEY, plat.authConfig, this.Database, plat.customParams))
       return platforms
     }
     return []

@@ -27,6 +27,8 @@ class Platform {
 
   #Database
 
+  #customParams
+
   /**
      * @param {string} name - Platform name.
      * @param {string} platformUrl - Platform url.
@@ -38,7 +40,7 @@ class Platform {
      * @param {string} _ENCRYPTIONKEY - Encryption key used
      * @param {Object} _authConfig - Authentication configurations for the platform.
      */
-  constructor (name, platformUrl, clientId, authenticationEndpoint, accesstokenEndpoint, authorizationServer, kid, _ENCRYPTIONKEY, _authConfig, Database) {
+  constructor (name, platformUrl, clientId, authenticationEndpoint, accesstokenEndpoint, authorizationServer, kid, _ENCRYPTIONKEY, _authConfig, Database, customParams) {
     this.#authConfig = _authConfig
     this.#ENCRYPTIONKEY = _ENCRYPTIONKEY
     this.#platformName = name
@@ -49,6 +51,7 @@ class Platform {
     this.#authorizationServer = authorizationServer
     this.#kid = kid
     this.#Database = Database
+    this.#customParams = customParams
   }
 
   /**
@@ -88,6 +91,13 @@ class Platform {
    */
   async platformKid () {
     return this.#kid
+  }
+
+   /**
+   * @description Gets the platform custom params.
+   */
+   platformCustomParams () {
+    return this.#customParams;
   }
 
   /**
@@ -209,6 +219,7 @@ class Platform {
       accesstokenEndpoint: this.#accesstokenEndpoint,
       authorizationServer: this.#authorizationServer || this.#accesstokenEndpoint,
       authConfig: this.#authConfig,
+      customParams: this.#customParams,
       publicKey: await this.platformPublicKey(),
       active: await this.platformActive()
     }
@@ -245,5 +256,5 @@ class Platform {
     return this.platformAuthenticationEndpoint(authenticationEndpoint)
   }
 }
-
+const plat = new Platform();
 module.exports = Platform

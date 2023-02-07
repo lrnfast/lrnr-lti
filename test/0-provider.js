@@ -40,6 +40,7 @@ describe('Testing Provider', function () {
           dynRegRoute: dynRegRoute,
           staticPath: path.join(__dirname, '/views/'),
           devMode: false,
+          customParams: { lmsType: 'canvas' },
           dynReg: { url: 'https://tool.example.com', name: 'Tool Name', logo: 'https://tool.example.com/assets/logo.svg', customParameters: { a: 'b' }, redirectUris: ['https://tool.example.com/launch'] }
         })
       return lti
@@ -67,6 +68,7 @@ describe('Testing Provider', function () {
       url: 'http://localhost/moodle',
       name: 'Platform Name',
       clientId: 'ClientId1',
+      customParams: { lmsType: 'canvas' },
       authenticationEndpoint: 'http://localhost/moodle/AuthorizationUrl',
       accesstokenEndpoint: 'http://localhost/moodle/AccessTokenUrl',
       authConfig: { method: 'INVALID_METHOD', key: 'http://localhost/moodle/keyset' }
@@ -134,6 +136,19 @@ describe('Testing Provider', function () {
       name: name
     })
     return expect(plat.platformName()).to.eventually.become(name)
+  })
+  it('Provider.registerPlatform expected to apply custom params changes to registered Platform object', async () => {
+    const customParams = { lmsType: 'moodle' }
+    const plat = await lti.registerPlatform({
+      url: 'http://localhost/moodle',
+      clientId: 'ClientId1_c',
+      name: 'Platform custom params',
+      authenticationEndpoint: 'http://localhost/moodle/AuthorizationUrl1',
+      accesstokenEndpoint: 'http://localhost/moodle/AccessTokenUrl1',
+      authConfig: { method: 'JWK_SET', key: 'http://localhost/moodle/keyset1' },
+      customParams,
+    })
+    return expect(plat.platformCustomParams()).to.deep.equal(customParams)
   })
   it('Provider.getPlatform expected to resolve Platform object', async () => {
     await expect(lti.getPlatform('http://localhost/moodle', 'ClientId1')).to.eventually.be.instanceOf(Platform)

@@ -35,6 +35,8 @@ var _kid = /*#__PURE__*/new WeakMap();
 
 var _Database = /*#__PURE__*/new WeakMap();
 
+var _customParams = /*#__PURE__*/new WeakMap();
+
 class Platform {
   /**
      * @param {string} name - Platform name.
@@ -47,7 +49,7 @@ class Platform {
      * @param {string} _ENCRYPTIONKEY - Encryption key used
      * @param {Object} _authConfig - Authentication configurations for the platform.
      */
-  constructor(name, platformUrl, clientId, authenticationEndpoint, accesstokenEndpoint, authorizationServer, kid, _ENCRYPTIONKEY, _authConfig, Database) {
+  constructor(name, platformUrl, clientId, authenticationEndpoint, accesstokenEndpoint, authorizationServer, kid, _ENCRYPTIONKEY, _authConfig, Database, customParams) {
     _platformName.set(this, {
       writable: true,
       value: void 0
@@ -98,6 +100,11 @@ class Platform {
       value: void 0
     });
 
+    _customParams.set(this, {
+      writable: true,
+      value: void 0
+    });
+
     (0, _classPrivateFieldSet2.default)(this, _authConfig2, _authConfig);
     (0, _classPrivateFieldSet2.default)(this, _ENCRYPTIONKEY2, _ENCRYPTIONKEY);
     (0, _classPrivateFieldSet2.default)(this, _platformName, name);
@@ -108,6 +115,7 @@ class Platform {
     (0, _classPrivateFieldSet2.default)(this, _authorizationServer, authorizationServer);
     (0, _classPrivateFieldSet2.default)(this, _kid, kid);
     (0, _classPrivateFieldSet2.default)(this, _Database, Database);
+    (0, _classPrivateFieldSet2.default)(this, _customParams, customParams);
   }
   /**
    * @description Gets the platform url.
@@ -157,6 +165,14 @@ class Platform {
 
   async platformKid() {
     return (0, _classPrivateFieldGet2.default)(this, _kid);
+  }
+  /**
+  * @description Gets the platform custom params.
+  */
+
+
+  platformCustomParams() {
+    return (0, _classPrivateFieldGet2.default)(this, _customParams);
   }
   /**
    * @description Sets/Gets the platform status.
@@ -321,6 +337,7 @@ class Platform {
       accesstokenEndpoint: (0, _classPrivateFieldGet2.default)(this, _accesstokenEndpoint),
       authorizationServer: (0, _classPrivateFieldGet2.default)(this, _authorizationServer) || (0, _classPrivateFieldGet2.default)(this, _accesstokenEndpoint),
       authConfig: (0, _classPrivateFieldGet2.default)(this, _authConfig2),
+      customParams: (0, _classPrivateFieldGet2.default)(this, _customParams),
       publicKey: await this.platformPublicKey(),
       active: await this.platformActive()
     };
@@ -373,4 +390,5 @@ class Platform {
 
 }
 
+const plat = new Platform();
 module.exports = Platform;
