@@ -75,7 +75,6 @@ class Database {
       authEndpoint: String,
       accesstokenEndpoint: String,
       authorizationServer: String,
-      customParams: Object,
       kid: String,
       authConfig: {
         method: String,

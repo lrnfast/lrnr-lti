@@ -935,7 +935,7 @@ class Provider {
       if (!platform.authConfig.key) throw new Error('MISSING_AUTHCONFIG_KEY');
       try {
         kid = await Auth.generatePlatformKeyPair(_ENCRYPTIONKEY, _Database, platform.url, platform.clientId);
-        const plat = new Platform(platform.name, platform.url, platform.clientId, platform.authenticationEndpoint, platform.accesstokenEndpoint, platform.authorizationServer, kid, _ENCRYPTIONKEY, platform.authConfig, this.Database, platform.customParams);
+        const plat = new Platform(platform.name, platform.url, platform.clientId, platform.authenticationEndpoint, platform.accesstokenEndpoint, platform.authorizationServer, kid, _ENCRYPTIONKEY, platform.authConfig, this.Database); // Save platform to db
 
         // Save platform to db
         provMainDebug('Registering new platform');
@@ -952,8 +952,7 @@ class Provider {
           accesstokenEndpoint: platform.accesstokenEndpoint,
           authorizationServer: platform.authorizationServer,
           kid: kid,
-          authConfig: platform.authConfig,
-          customParams: platform.customParams
+          authConfig: platform.authConfig
         });
         return plat;
       } catch (err) {
@@ -980,8 +979,7 @@ class Provider {
         authEndpoint: platform.authenticationEndpoint || (await _platform.platformAuthEndpoint()),
         accesstokenEndpoint: platform.accesstokenEndpoint || (await _platform.platformAccessTokenEndpoint()),
         authorizationServer: platform.authorizationServer || (await _platform.platformAuthorizationServer()),
-        authConfig: platform.authConfig || (await _platform.platformAuthConfig()),
-        customParams: platform.customParams || (await _platform.platformCustomParams())
+        authConfig: platform.authConfig || (await _platform.platformAuthConfig())
       });
       return _getPlatform(platform.url, platform.clientId, _ENCRYPTIONKEY, _Database);
     }
@@ -1004,7 +1002,7 @@ class Provider {
       });
       if (!result) return false;
       const plat = result[0];
-      const platform = new Platform(plat.platformName, plat.platformUrl, plat.clientId, plat.authEndpoint, plat.accesstokenEndpoint, plat.authorizationServer, plat.kid, _ENCRYPTIONKEY, plat.authConfig, _Database, plat.customParams);
+      const platform = new Platform(plat.platformName, plat.platformUrl, plat.clientId, plat.authEndpoint, plat.accesstokenEndpoint, plat.authorizationServer, plat.kid, _ENCRYPTIONKEY, plat.authConfig, _Database);
       return platform;
     }
     const result = await _Database.Get(false, 'platform', {
@@ -1013,7 +1011,7 @@ class Provider {
     if (!result) return false;
     const platforms = [];
     for (const plat of result) {
-      const platform = new Platform(plat.platformName, plat.platformUrl, plat.clientId, plat.authEndpoint, plat.accesstokenEndpoint, plat.authorizationServer, plat.kid, _ENCRYPTIONKEY, plat.authConfig, _Database, plat.customParams);
+      const platform = new Platform(plat.platformName, plat.platformUrl, plat.clientId, plat.authEndpoint, plat.accesstokenEndpoint, plat.authorizationServer, plat.kid, _ENCRYPTIONKEY, plat.authConfig, _Database);
       platforms.push(platform);
     }
     return platforms;
@@ -1031,7 +1029,7 @@ class Provider {
     });
     if (!result) return false;
     const plat = result[0];
-    const platform = new Platform(plat.platformName, plat.platformUrl, plat.clientId, plat.authEndpoint, plat.accesstokenEndpoint, plat.authorizationServer, plat.kid, (0, _classPrivateFieldGet2.default)(this, _ENCRYPTIONKEY2), plat.authConfig, this.Database, plat.customParams);
+    const platform = new Platform(plat.platformName, plat.platformUrl, plat.clientId, plat.authEndpoint, plat.accesstokenEndpoint, plat.authorizationServer, plat.kid, (0, _classPrivateFieldGet2.default)(this, _ENCRYPTIONKEY2), plat.authConfig, this.Database);
     return platform;
   }
 
@@ -1065,8 +1063,7 @@ class Provider {
       clientId: platformInfo.clientId || oldClientId,
       name: platformInfo.name || (await platform.platformName()),
       authenticationEndpoint: platformInfo.authenticationEndpoint || (await platform.platformAuthEndpoint()),
-      accesstokenEndpoint: platformInfo.accesstokenEndpoint || (await platform.platformAccessTokenEndpoint()),
-      customParams: _objectSpread(_objectSpread({}, platform.platformCustomParams()), platformInfo.customParams)
+      accesstokenEndpoint: platformInfo.accesstokenEndpoint || (await platform.platformAccessTokenEndpoint())
     };
     if (platformInfo.authorizationServer !== undefined) update.authorizationServer = platformInfo.authorizationServer;
     const authConfig = await platform.platformAuthConfig();
@@ -1111,7 +1108,7 @@ class Provider {
         authorizationServer: update.authorizationServer,
         authConfig: update.authConfig
       });
-      const platform = new Platform(update.name, update.url, update.clientId, update.authenticationEndpoint, update.accesstokenEndpoint, update.authorizationServer, platformId, (0, _classPrivateFieldGet2.default)(this, _ENCRYPTIONKEY2), update.authConfig, this.Database, update.customParams);
+      const platform = new Platform(update.name, update.url, update.clientId, update.authenticationEndpoint, update.accesstokenEndpoint, update.authorizationServer, platformId, (0, _classPrivateFieldGet2.default)(this, _ENCRYPTIONKEY2), update.authConfig, this.Database);
       return platform;
     } catch (err) {
       if (alteredUrlClientIdFlag) {
@@ -1166,7 +1163,8 @@ class Provider {
     const platforms = [];
     const result = await this.Database.Get(false, 'platform');
     if (result) {
-      for (const plat of result) platforms.push(new Platform(plat.platformName, plat.platformUrl, plat.clientId, plat.authEndpoint, plat.accesstokenEndpoint, plat.authorizationServer, plat.kid, (0, _classPrivateFieldGet2.default)(this, _ENCRYPTIONKEY2), plat.authConfig, this.Database, plat.customParams));
+      for (const plat of result) platforms.push(new Platform(plat.platformName, plat.platformUrl, plat.clientId, plat.authEndpoint, plat.accesstokenEndpoint, plat.authorizationServer, plat.kid, (0, _classPrivateFieldGet2.default)(this, _ENCRYPTIONKEY2), plat.authConfig, this.Database));
+
       return platforms;
     }
     return [];
