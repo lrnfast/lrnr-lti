@@ -35,7 +35,7 @@ class Platform {
      * @param {Object} _authConfig - Authentication configurations for the platform.
      */
   constructor(name, platformUrl, clientId, authenticationEndpoint, accesstokenEndpoint, authorizationServer, kid, _ENCRYPTIONKEY, _authConfig, Database) {
-    _platformName.set(this, {
+    _classPrivateFieldInitSpec(this, _platformName, {
       writable: true,
       value: void 0
     });

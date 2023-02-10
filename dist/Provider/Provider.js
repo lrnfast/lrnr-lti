@@ -311,6 +311,7 @@ class Provider {
       provMainDebug('Receiving request at path: ' + req.baseUrl + req.path);
       // Check if private route
       if ((_options$privateRoute = options.privateRouteRegex) !== null && _options$privateRoute !== void 0 && _options$privateRoute.exec(req.path)) return next();
+      provMainDebug('Path is not a private route');
       // Ckeck if request is attempting to initiate oidc login flow or access reserved routes
       if (req.path === (0, _classPrivateFieldGet2.default)(this, _loginRoute) || req.path === (0, _classPrivateFieldGet2.default)(this, _keysetRoute) || req.path === (0, _classPrivateFieldGet2.default)(this, _dynRegRoute)) return next();
       provMainDebug('Path does not match reserved endpoints');
@@ -935,7 +936,7 @@ class Provider {
       if (!platform.authConfig.key) throw new Error('MISSING_AUTHCONFIG_KEY');
       try {
         kid = await Auth.generatePlatformKeyPair(_ENCRYPTIONKEY, _Database, platform.url, platform.clientId);
-        const plat = new Platform(platform.name, platform.url, platform.clientId, platform.authenticationEndpoint, platform.accesstokenEndpoint, platform.authorizationServer, kid, _ENCRYPTIONKEY, platform.authConfig, this.Database); // Save platform to db
+        const plat = new Platform(platform.name, platform.url, platform.clientId, platform.authenticationEndpoint, platform.accesstokenEndpoint, platform.authorizationServer, kid, _ENCRYPTIONKEY, platform.authConfig, this.Database);
 
         // Save platform to db
         provMainDebug('Registering new platform');
@@ -1164,7 +1165,6 @@ class Provider {
     const result = await this.Database.Get(false, 'platform');
     if (result) {
       for (const plat of result) platforms.push(new Platform(plat.platformName, plat.platformUrl, plat.clientId, plat.authEndpoint, plat.accesstokenEndpoint, plat.authorizationServer, plat.kid, (0, _classPrivateFieldGet2.default)(this, _ENCRYPTIONKEY2), plat.authConfig, this.Database));
-
       return platforms;
     }
     return [];
