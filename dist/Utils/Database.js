@@ -1,11 +1,8 @@
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
-var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/defineProperty"));
 var _classPrivateFieldGet2 = _interopRequireDefault(require("@babel/runtime/helpers/classPrivateFieldGet"));
 var _classPrivateFieldSet2 = _interopRequireDefault(require("@babel/runtime/helpers/classPrivateFieldSet"));
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { (0, _defineProperty2.default)(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 function _classPrivateFieldInitSpec(obj, privateMap, value) { _checkPrivateRedeclaration(obj, privateMap); privateMap.set(obj, value); }
 function _checkPrivateRedeclaration(obj, privateCollection) { if (privateCollection.has(obj)) { throw new TypeError("Cannot initialize the same private elements twice on an object"); } }
 const mongoose = require('mongoose');
@@ -48,7 +45,10 @@ class Database {
     // Configures database connection
     (0, _classPrivateFieldSet2.default)(this, _dbUrl, database.url);
     if (database.debug) mongoose.set('debug', true);
-    (0, _classPrivateFieldSet2.default)(this, _dbConnection, _objectSpread(_objectSpread({}, (0, _classPrivateFieldGet2.default)(this, _dbConnection)), database.connection));
+    (0, _classPrivateFieldSet2.default)(this, _dbConnection, {
+      ...(0, _classPrivateFieldGet2.default)(this, _dbConnection),
+      ...database.connection
+    });
 
     // Creating database schemas
     const idTokenSchema = new Schema({
@@ -289,10 +289,11 @@ class Database {
     let newDocData = item;
     if (ENCRYPTIONKEY) {
       const encrypted = await this.Encrypt(JSON.stringify(item), ENCRYPTIONKEY);
-      newDocData = _objectSpread(_objectSpread({}, index), {}, {
+      newDocData = {
+        ...index,
         iv: encrypted.iv,
         data: encrypted.data
-      });
+      };
     }
     const newDoc = new Model(newDocData);
     await newDoc.save();
@@ -314,10 +315,11 @@ class Database {
     let newDocData = item;
     if (ENCRYPTIONKEY) {
       const encrypted = await this.Encrypt(JSON.stringify(item), ENCRYPTIONKEY);
-      newDocData = _objectSpread(_objectSpread({}, index), {}, {
+      newDocData = {
+        ...index,
         iv: encrypted.iv,
         data: encrypted.data
-      });
+      };
     }
     await Model.replaceOne(query, newDocData, {
       upsert: true

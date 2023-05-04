@@ -1,11 +1,8 @@
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
-var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/defineProperty"));
 var _classPrivateFieldSet2 = _interopRequireDefault(require("@babel/runtime/helpers/classPrivateFieldSet"));
 var _classPrivateFieldGet2 = _interopRequireDefault(require("@babel/runtime/helpers/classPrivateFieldGet"));
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { (0, _defineProperty2.default)(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 function _classPrivateFieldInitSpec(obj, privateMap, value) { _checkPrivateRedeclaration(obj, privateMap); privateMap.set(obj, value); }
 function _checkPrivateRedeclaration(obj, privateCollection) { if (privateCollection.has(obj)) { throw new TypeError("Cannot initialize the same private elements twice on an object"); } }
 /* eslint-disable require-atomic-updates */
@@ -342,20 +339,32 @@ class Provider {
 
             // Retrieve State object from Database
             const savedState = await this.Database.Get(false, 'state', {
-              state: state
+              state
             });
 
             // Deletes state validation cookie and Database entry
             res.clearCookie('state' + state, (0, _classPrivateFieldGet2.default)(this, _cookieOptions));
             if (savedState) this.Database.Delete('state', {
-              state: state
+              state
             });
             provAuthDebug('Successfully validated token!');
             const courseId = valid['https://purl.imsglobal.org/spec/lti/claim/context'] ? valid['https://purl.imsglobal.org/spec/lti/claim/context'].id : 'NF';
             const resourceId = valid['https://purl.imsglobal.org/spec/lti/claim/resource_link'] ? valid['https://purl.imsglobal.org/spec/lti/claim/resource_link'].id : 'NF';
             const clientId = valid.clientId;
             const deploymentId = valid['https://purl.imsglobal.org/spec/lti/claim/deployment_id'];
-            const contextId = encodeURIComponent(valid.iss + clientId + deploymentId + courseId + '_' + resourceId);
+            const additionalContextProperties = {
+              path: req.path,
+              roles: valid['https://purl.imsglobal.org/spec/lti/claim/roles'],
+              targetLinkUri: valid['https://purl.imsglobal.org/spec/lti/claim/target_link_uri'],
+              custom: valid['https://purl.imsglobal.org/spec/lti/claim/custom'],
+              launchPresentation: valid['https://purl.imsglobal.org/spec/lti/claim/launch_presentation'],
+              endpoint: valid['https://purl.imsglobal.org/spec/lti-ags/claim/endpoint'],
+              namesRoles: valid['https://purl.imsglobal.org/spec/lti-nrps/claim/namesroleservice']
+            };
+            const hashOfAdditionalContextProperties = crypto.createHash('sha256').update(JSON.stringify(additionalContextProperties)).digest('hex');
+
+            // Appending hashOfContextProperties is a temporary fix to prevent overwriting existing database entries in some scenarios. See: https://github.com/Cvmcosta/ltijs/issues/181
+            const contextId = encodeURIComponent(valid.iss + clientId + deploymentId + courseId + '_' + resourceId + '_' + hashOfAdditionalContextProperties);
             const platformCode = encodeURIComponent('lti' + Buffer.from(valid.iss + clientId + deploymentId).toString('base64'));
 
             // Mount platform token
@@ -377,33 +386,27 @@ class Provider {
             // Store idToken in database
             await this.Database.Replace(false, 'idtoken', {
               iss: valid.iss,
-              clientId: clientId,
-              deploymentId: deploymentId,
+              clientId,
+              deploymentId,
               user: valid.sub
             }, platformToken);
 
             // Mount context token
             const contextToken = {
-              contextId: contextId,
-              path: req.path,
+              contextId,
               user: valid.sub,
-              roles: valid['https://purl.imsglobal.org/spec/lti/claim/roles'],
-              targetLinkUri: valid['https://purl.imsglobal.org/spec/lti/claim/target_link_uri'],
               context: valid['https://purl.imsglobal.org/spec/lti/claim/context'],
               resource: valid['https://purl.imsglobal.org/spec/lti/claim/resource_link'],
-              custom: valid['https://purl.imsglobal.org/spec/lti/claim/custom'],
-              launchPresentation: valid['https://purl.imsglobal.org/spec/lti/claim/launch_presentation'],
               messageType: valid['https://purl.imsglobal.org/spec/lti/claim/message_type'],
               version: valid['https://purl.imsglobal.org/spec/lti/claim/version'],
               deepLinkingSettings: valid['https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings'],
               lis: valid['https://purl.imsglobal.org/spec/lti/claim/lis'],
-              endpoint: valid['https://purl.imsglobal.org/spec/lti-ags/claim/endpoint'],
-              namesRoles: valid['https://purl.imsglobal.org/spec/lti-nrps/claim/namesroleservice']
+              ...additionalContextProperties
             };
 
             // Store contextToken in database
             await this.Database.Replace(false, 'contexttoken', {
-              contextId: contextId,
+              contextId,
               user: valid.sub
             }, contextToken);
 
@@ -412,10 +415,10 @@ class Provider {
             provMainDebug('Generating ltik');
             const newLtikObj = {
               platformUrl: valid.iss,
-              clientId: clientId,
-              deploymentId: deploymentId,
-              platformCode: platformCode,
-              contextId: contextId,
+              clientId,
+              deploymentId,
+              platformCode,
+              contextId,
               user: valid.sub,
               s: state // Added state to make unique ltiks
             };
@@ -456,11 +459,11 @@ class Provider {
             if (state) {
               provMainDebug('Deleting state cookie and Database entry');
               const savedState = await this.Database.Get(false, 'state', {
-                state: state
+                state
               });
               res.clearCookie('state' + state, (0, _classPrivateFieldGet2.default)(this, _cookieOptions));
               if (savedState) this.Database.Delete('state', {
-                state: state
+                state
               });
             }
             if ((0, _classPrivateFieldGet2.default)(this, _whitelistedRoutes).find(r => {
@@ -520,9 +523,9 @@ class Provider {
           // Gets corresponding id token from database
           let idTokenRes = await this.Database.Get(false, 'idtoken', {
             iss: platformUrl,
-            clientId: clientId,
-            deploymentId: deploymentId,
-            user: user
+            clientId,
+            deploymentId,
+            user
           });
           if (!idTokenRes) throw new Error('IDTOKEN_NOT_FOUND_DB');
           idTokenRes = idTokenRes[0];
@@ -530,8 +533,8 @@ class Provider {
 
           // Gets correspondent context token from database
           let contextToken = await this.Database.Get(false, 'contexttoken', {
-            contextId: contextId,
-            user: user
+            contextId,
+            user
           });
           if (!contextToken) throw new Error('CONTEXTTOKEN_NOT_FOUND_DB');
           contextToken = contextToken[0];
@@ -561,11 +564,11 @@ class Provider {
         if (state) {
           provMainDebug('Deleting state cookie and Database entry');
           const savedState = await this.Database.Get(false, 'state', {
-            state: state
+            state
           });
           res.clearCookie('state' + state, (0, _classPrivateFieldGet2.default)(this, _cookieOptions));
           if (savedState) this.Database.Delete('state', {
-            state: state
+            state
           });
         }
         provAuthDebug(err);
@@ -583,7 +586,10 @@ class Provider {
     };
     this.app.use(sessionValidator);
     this.app.all((0, _classPrivateFieldGet2.default)(this, _loginRoute), async (req, res) => {
-      const params = _objectSpread(_objectSpread({}, req.query), req.body);
+      const params = {
+        ...req.query,
+        ...req.body
+      };
       try {
         if (!params.iss || !params.login_hint || !params.target_link_uri) return res.status(400).send({
           status: 400,
@@ -611,7 +617,7 @@ class Provider {
             const rawQueries = new URLSearchParams('?' + params.target_link_uri.split('?')[1]);
             // Check if state is unique
             while (await this.Database.Get(false, 'state', {
-              state: state
+              state
             })) state = encodeURIComponent(crypto.randomBytes(25).toString('hex'));
             provMainDebug('Generated state: ', state);
             // Assemble queries object
@@ -624,7 +630,7 @@ class Provider {
             provMainDebug('Final Redirect URI: ', params.target_link_uri);
             // Store state and query parameters on database
             await this.Database.Insert(false, 'state', {
-              state: state,
+              state,
               query: queries
             });
           }
@@ -640,7 +646,7 @@ class Provider {
           provMainDebug(query);
           res.redirect(url.format({
             pathname: await platform.platformAuthEndpoint(),
-            query: query
+            query
           }));
         } else {
           provMainDebug('Unregistered platform attempting connection: ' + iss + ', clientId: ' + clientId);
@@ -901,7 +907,7 @@ class Provider {
           method: route.method.toUpperCase()
         });
       } else formattedRoutes.push({
-        route: route,
+        route,
         method: 'ALL'
       });
     }
@@ -952,16 +958,16 @@ class Provider {
           authEndpoint: platform.authenticationEndpoint,
           accesstokenEndpoint: platform.accesstokenEndpoint,
           authorizationServer: platform.authorizationServer,
-          kid: kid,
+          kid,
           authConfig: platform.authConfig
         });
         return plat;
       } catch (err) {
         await _Database.Delete('publickey', {
-          kid: kid
+          kid
         });
         await _Database.Delete('privatekey', {
-          kid: kid
+          kid
         });
         await _Database.Delete('platform', {
           platformUrl: platform.url,
@@ -999,7 +1005,7 @@ class Provider {
     if (clientId) {
       const result = await _Database.Get(false, 'platform', {
         platformUrl: url,
-        clientId: clientId
+        clientId
       });
       if (!result) return false;
       const plat = result[0];
@@ -1194,7 +1200,7 @@ class Provider {
         contextId: token.platformContext.contextId,
         user: res.locals.token.user
       }, {
-        path: path
+        path
       });
     }
 
@@ -1218,9 +1224,11 @@ class Provider {
       port: pathParts.port,
       auth: pathParts.auth,
       hash: pathParts.hash,
-      query: _objectSpread(_objectSpread(_objectSpread({}, queries), additionalQueries), {}, {
+      query: {
+        ...queries,
+        ...additionalQueries,
         ltik: res.locals.ltik
-      })
+      }
     });
 
     // Redirects to path with queries
