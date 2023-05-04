@@ -147,7 +147,7 @@ class Platform {
       id: (0, _classPrivateFieldGet2.default)(this, _kid)
     }, {
       id: (0, _classPrivateFieldGet2.default)(this, _kid),
-      active: active
+      active
     });
     return active;
   }
@@ -190,7 +190,7 @@ class Platform {
       platformUrl: (0, _classPrivateFieldGet2.default)(this, _platformUrl),
       clientId: (0, _classPrivateFieldGet2.default)(this, _clientId)
     }, {
-      authConfig: authConfig
+      authConfig
     });
     (0, _classPrivateFieldSet2.default)(this, _authConfig2, authConfig);
     return authConfig;
@@ -222,7 +222,7 @@ class Platform {
       platformUrl: (0, _classPrivateFieldGet2.default)(this, _platformUrl),
       clientId: (0, _classPrivateFieldGet2.default)(this, _clientId)
     }, {
-      accesstokenEndpoint: accesstokenEndpoint
+      accesstokenEndpoint
     });
     (0, _classPrivateFieldSet2.default)(this, _accesstokenEndpoint, accesstokenEndpoint);
     return accesstokenEndpoint;
@@ -238,7 +238,7 @@ class Platform {
       platformUrl: (0, _classPrivateFieldGet2.default)(this, _platformUrl),
       clientId: (0, _classPrivateFieldGet2.default)(this, _clientId)
     }, {
-      authorizationServer: authorizationServer
+      authorizationServer
     });
     (0, _classPrivateFieldSet2.default)(this, _authorizationServer, authorizationServer);
     return authorizationServer;
@@ -252,7 +252,7 @@ class Platform {
     const result = await (0, _classPrivateFieldGet2.default)(this, _Database).Get((0, _classPrivateFieldGet2.default)(this, _ENCRYPTIONKEY2), 'accesstoken', {
       platformUrl: (0, _classPrivateFieldGet2.default)(this, _platformUrl),
       clientId: (0, _classPrivateFieldGet2.default)(this, _clientId),
-      scopes: scopes
+      scopes
     });
     let token;
     if (!result || (Date.now() - result[0].createdAt) / 1000 > result[0].token.expires_in) {

@@ -430,7 +430,7 @@ class Grade {
       searchParams = new URLSearchParams(searchParams);
       provGradeServiceDebug('Requesting scores from: ' + resultsUrl);
       response = await got.get(resultsUrl, {
-        searchParams: searchParams,
+        searchParams,
         headers: {
           Authorization: accessToken.token_type + ' ' + accessToken.access_token,
           Accept: 'application/vnd.ims.lis.v2.resultcontainer+json'
@@ -558,7 +558,7 @@ class Grade {
     if (options && options.id) {
       try {
         lineItems = [await this.getLineItemById(idtoken, options.id, accessToken)];
-      } catch (_unused) {
+      } catch {
         lineItems = [];
       }
     } else {
@@ -658,7 +658,7 @@ class Grade {
     if (options && options.id) {
       try {
         lineItems = [await this.getLineItemById(idtoken, options.id, accessToken)];
-      } catch (_unused2) {
+      } catch {
         lineItems = [];
       }
     } else {
@@ -685,7 +685,7 @@ class Grade {
         searchParams = new URLSearchParams(searchParams);
         provGradeServiceDebug('Requesting results from: ' + resultsUrl);
         const results = await got.get(resultsUrl, {
-          searchParams: searchParams,
+          searchParams,
           headers: {
             Authorization: accessToken.token_type + ' ' + accessToken.access_token,
             Accept: 'application/vnd.ims.lis.v2.resultcontainer+json'
@@ -693,7 +693,7 @@ class Grade {
         }).json();
         resultsArray.push({
           lineitem: lineitem.id,
-          results: results
+          results
         });
       } catch (err) {
         provGradeServiceDebug(err.message);
