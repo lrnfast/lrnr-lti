@@ -52,6 +52,7 @@ var _keyset = /*#__PURE__*/new WeakMap();
 var _server = /*#__PURE__*/new WeakMap();
 class Provider {
   constructor() {
+    // Pre-initiated variables
     _classPrivateFieldInitSpec(this, _loginRoute, {
       writable: true,
       value: '/login'
@@ -96,6 +97,7 @@ class Provider {
         signed: true
       }
     });
+    // Setup flag
     _classPrivateFieldInitSpec(this, _setup, {
       writable: true,
       value: false
@@ -181,6 +183,7 @@ class Provider {
         });
       }
     });
+    // Assembles and sends keyset
     _classPrivateFieldInitSpec(this, _keyset, {
       writable: true,
       value: async (req, res) => {

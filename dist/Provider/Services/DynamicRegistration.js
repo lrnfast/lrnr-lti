@@ -195,9 +195,15 @@ class DynamicRegistration {
       id: await registered.platformId(),
       active: (0, _classPrivateFieldGet2.default)(this, _autoActivate)
     });
-
+    const message = '<script>(window.opener || window.parent).postMessage({subject:"org.imsglobal.lti.close"}, "*");</script>';
+    if (options.returnPlatform) {
+      return {
+        message,
+        platform: registered
+      };
+    }
     // Returing message indicating the end of registration flow
-    return '<script>(window.opener || window.parent).postMessage({subject:"org.imsglobal.lti.close"}, "*");</script>';
+    return message;
   }
 }
 module.exports = DynamicRegistration;
