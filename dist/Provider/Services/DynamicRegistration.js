@@ -196,7 +196,7 @@ class DynamicRegistration {
       active: (0, _classPrivateFieldGet2.default)(this, _autoActivate)
     });
     const message = '<script>(window.opener || window.parent).postMessage({subject:"org.imsglobal.lti.close"}, "*");</script>';
-    if (options.returnPlatform) {
+    if (options !== null && options !== void 0 && options.returnPlatform) {
       return {
         message,
         platform: registered
