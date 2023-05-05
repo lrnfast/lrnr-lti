@@ -143,8 +143,15 @@ class DynamicRegistration {
     const registered = await this.#registerPlatform(platform, this.#getPlatform, this.#ENCRYPTIONKEY, this.#Database)
     await this.#Database.Insert(false, 'platformStatus', { id: await registered.platformId(), active: this.#autoActivate })
 
+    const message = '<script>(window.opener || window.parent).postMessage({subject:"org.imsglobal.lti.close"}, "*");</script>';
+    if (options.returnPlatform) {
+      return {
+        message,
+        platform: registered
+      }
+    }
     // Returing message indicating the end of registration flow
-    return '<script>(window.opener || window.parent).postMessage({subject:"org.imsglobal.lti.close"}, "*");</script>'
+    return message
   }
 }
 
