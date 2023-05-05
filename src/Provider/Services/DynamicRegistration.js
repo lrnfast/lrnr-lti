@@ -144,7 +144,7 @@ class DynamicRegistration {
     await this.#Database.Insert(false, 'platformStatus', { id: await registered.platformId(), active: this.#autoActivate })
 
     const message = '<script>(window.opener || window.parent).postMessage({subject:"org.imsglobal.lti.close"}, "*");</script>';
-    if (options.returnPlatform) {
+    if (options?.returnPlatform) {
       return {
         message,
         platform: registered
