@@ -92,7 +92,7 @@ class DynamicRegistration {
     provDynamicRegistrationDebug('Starting dynamic registration process')
     // Get Platform registration configurations
     const configuration = await got.get(openidConfiguration).json()
-    provDynamicRegistrationDebug('Attempting to register Platform with issuer: ', configuration.issuer)
+    provDynamicRegistrationDebug('Attempting to register Platform, configuration : ', configuration)
     // Building registration object
     const registration = {
       application_type: 'web',
