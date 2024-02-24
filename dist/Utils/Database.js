@@ -61,7 +61,7 @@ class Database {
       deploymentId: String,
       createdAt: {
         type: Date,
-        expires: 3600 * 24,
+        expires: 3600 * 24 * 30,
         default: Date.now
       }
     });
@@ -89,7 +89,7 @@ class Database {
       namesRoles: JSON,
       createdAt: {
         type: Date,
-        expires: 3600 * 24,
+        expires: 3600 * 24 * 30,
         default: Date.now
       }
     });
