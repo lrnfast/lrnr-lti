@@ -44,7 +44,7 @@ class Database {
       clientId: String,
       platformId: String,
       deploymentId: String,
-      createdAt: { type: Date, expires: 3600 * 24, default: Date.now }
+      createdAt: { type: Date, expires: 3600 * 24 * 7, default: Date.now }
     })
     idTokenSchema.index({ iss: 1, clientId: 1, deploymentId: 1, user: 1 })
 
@@ -64,7 +64,7 @@ class Database {
       lis: JSON,
       endpoint: JSON,
       namesRoles: JSON,
-      createdAt: { type: Date, expires: 3600 * 24, default: Date.now }
+      createdAt: { type: Date, expires: 3600 * 24 * 7, default: Date.now }
     })
     contextTokenSchema.index({ contextId: 1, user: 1 })
 
