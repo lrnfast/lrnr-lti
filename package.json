@@ -1,6 +1,6 @@
 {
   "name": "lrnr-lti",
-  "version": "5.8.6",
+  "version": "5.8.7",
   "description": "Lrnr LTI 1.3",
   "main": "index.js",
   "engineStrict": true,
