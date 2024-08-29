@@ -3,8 +3,8 @@
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 var _classPrivateFieldGet2 = _interopRequireDefault(require("@babel/runtime/helpers/classPrivateFieldGet"));
 var _classPrivateFieldSet2 = _interopRequireDefault(require("@babel/runtime/helpers/classPrivateFieldSet"));
-function _classPrivateFieldInitSpec(obj, privateMap, value) { _checkPrivateRedeclaration(obj, privateMap); privateMap.set(obj, value); }
-function _checkPrivateRedeclaration(obj, privateCollection) { if (privateCollection.has(obj)) { throw new TypeError("Cannot initialize the same private elements twice on an object"); } }
+function _classPrivateFieldInitSpec(e, t, a) { _checkPrivateRedeclaration(e, t), t.set(e, a); }
+function _checkPrivateRedeclaration(e, t) { if (t.has(e)) throw new TypeError("Cannot initialize the same private elements twice on an object"); }
 /* Provider Dynamic Registration Service */
 const got = require('got');
 const crypto = require('crypto');
@@ -145,7 +145,7 @@ class DynamicRegistration {
       response_types: ['id_token'],
       grant_types: ['implicit', 'client_credentials'],
       initiate_login_uri: (0, _classPrivateFieldGet2.default)(this, _loginUrl),
-      redirect_uris: [...(0, _classPrivateFieldGet2.default)(this, _redirectUris), (0, _classPrivateFieldGet2.default)(this, _appUrl)],
+      redirect_uris: [...(0, _classPrivateFieldGet2.default)(this, _redirectUris)],
       client_name: (0, _classPrivateFieldGet2.default)(this, _name),
       jwks_uri: (0, _classPrivateFieldGet2.default)(this, _keysetUrl),
       logo_uri: (0, _classPrivateFieldGet2.default)(this, _logo),
@@ -154,7 +154,7 @@ class DynamicRegistration {
       'https://purl.imsglobal.org/spec/lti-tool-configuration': {
         domain: (0, _classPrivateFieldGet2.default)(this, _hostname),
         description: (0, _classPrivateFieldGet2.default)(this, _description),
-        target_link_uri: (0, _classPrivateFieldGet2.default)(this, _appUrl),
+        target_link_uri: [...(0, _classPrivateFieldGet2.default)(this, _redirectUris)][0],
         custom_parameters: (0, _classPrivateFieldGet2.default)(this, _customParameters),
         claims: configuration.claims_supported,
         messages: [{

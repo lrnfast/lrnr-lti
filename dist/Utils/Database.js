@@ -3,8 +3,8 @@
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 var _classPrivateFieldGet2 = _interopRequireDefault(require("@babel/runtime/helpers/classPrivateFieldGet"));
 var _classPrivateFieldSet2 = _interopRequireDefault(require("@babel/runtime/helpers/classPrivateFieldSet"));
-function _classPrivateFieldInitSpec(obj, privateMap, value) { _checkPrivateRedeclaration(obj, privateMap); privateMap.set(obj, value); }
-function _checkPrivateRedeclaration(obj, privateCollection) { if (privateCollection.has(obj)) { throw new TypeError("Cannot initialize the same private elements twice on an object"); } }
+function _classPrivateFieldInitSpec(e, t, a) { _checkPrivateRedeclaration(e, t), t.set(e, a); }
+function _checkPrivateRedeclaration(e, t) { if (t.has(e)) throw new TypeError("Cannot initialize the same private elements twice on an object"); }
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const crypto = require('crypto');
@@ -61,7 +61,7 @@ class Database {
       deploymentId: String,
       createdAt: {
         type: Date,
-        expires: 3600 * 24 * 30,
+        expires: 3600 * 24 * 60,
         default: Date.now
       }
     });
@@ -89,7 +89,7 @@ class Database {
       namesRoles: JSON,
       createdAt: {
         type: Date,
-        expires: 3600 * 24 * 30,
+        expires: 3600 * 24 * 100,
         default: Date.now
       }
     });
