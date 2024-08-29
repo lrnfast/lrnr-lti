@@ -99,7 +99,7 @@ class DynamicRegistration {
       response_types: ['id_token'],
       grant_types: ['implicit', 'client_credentials'],
       initiate_login_uri: this.#loginUrl,
-      redirect_uris: [...this.#redirectUris, this.#appUrl],
+      redirect_uris: [...this.#redirectUris],
       client_name: this.#name,
       jwks_uri: this.#keysetUrl,
       logo_uri: this.#logo,
@@ -108,7 +108,7 @@ class DynamicRegistration {
       'https://purl.imsglobal.org/spec/lti-tool-configuration': {
         domain: this.#hostname,
         description: this.#description,
-        target_link_uri: this.#appUrl,
+        target_link_uri: [...this.#redirectUris][0],
         custom_parameters: this.#customParameters,
         claims: configuration.claims_supported,
         messages: [
