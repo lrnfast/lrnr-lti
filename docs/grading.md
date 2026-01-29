@@ -59,7 +59,7 @@ Ltijs is able to send grades to a platform in the [application/vnd.ims.lis.v1.sc
 }
 ```
 
-> This excludes the *timestamp* field of the specification, because the submitScore method generates it automatically.
+> This excludes the *timestamp* field of the specification, because the submitScore method generates it automatically when not already provided.
 
 
 Sending the grade: 

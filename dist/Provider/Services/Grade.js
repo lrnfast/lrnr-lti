@@ -353,8 +353,8 @@ class Grade {
     // If no user is specified, sends the score to the user that originated request
     if (score.userId === undefined) score.userId = idtoken.user;
 
-    // Creating timestamp
-    score.timestamp = new Date(Date.now()).toISOString();
+    // Creating timestamp only if not already provided
+    if (score.timestamp === undefined) score.timestamp = new Date(Date.now()).toISOString();
     provGradeServiceDebug('Sending score to: ' + scoreUrl);
     provGradeServiceDebug(score);
     await got.post(scoreUrl, {
