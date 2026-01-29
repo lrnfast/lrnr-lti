@@ -9,6 +9,10 @@
 
 ### CHANGELOG
 
+#### V5.9.5
+> 2026-01-29
+> - Score submission: timestamp is now set only when not already provided.
+
 #### V5.7.5
 > 2021-05-13
 > - Fix authentication flow using JWK_SET.
